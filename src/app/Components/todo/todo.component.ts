@@ -37,24 +37,43 @@ export class TodoComponent implements OnInit {
   done: Task[] = [];
 
   isEditEnabled: boolean = false;
+  updatedIndex!: any;
 
   constructor(private fb:FormBuilder) {}
   ngOnInit():void {
     this.todoForm = this.fb.group({
-      item : ['', Validators.required]
+      item : ['', [Validators.required, Validators.minLength(3)]]
     });
   }
     addTask(){
+      this.tasks.push({
+        Title : this.todoForm.value.item,
+        Completed:false
+      });
+      this.todoForm.reset();
 
     }
     updateTask(){
-      
+      this.tasks[this.updatedIndex].Title = this.todoForm.value.item;
+      this.tasks[this.updatedIndex].Completed = false;
+      this.todoForm.reset();
+      this.updatedIndex = undefined;
+      this.isEditEnabled = false;
+
     }
     deleteTask(taskId:number){
-
+      this.tasks.splice(taskId, 1);
+    }
+    deleteInProgressTask(taskId:number){
+      this.inprogress.splice(taskId, 1);
+    }
+    deleteDoneTask(taskId:number){
+      this.done.splice(taskId, 1);
     }
     onEditTask(task:Task,taskId:number){
-
+      this.todoForm.controls['item'].setValue(task.Title);
+      this.updatedIndex = taskId;
+      this.isEditEnabled = true;
     }
   
 
